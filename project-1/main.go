@@ -48,8 +48,8 @@ func updateData(slice []string, index int) {
 func showData(index int) {
 	fmt.Println(vegetables[index])
 	fmt.Println(`Untuk mengupdate data, tekan 1.
-		Untuk menghapus data, tekan 2.
-		Masukkan selain 1 atau 2 untuk kembali ke menu utama.`)
+Untuk menghapus data, tekan 2.
+Masukkan selain 1 atau 2 untuk kembali ke menu utama.`)
 
 	var selectedMenu int
 	fmt.Scanln(&selectedMenu)
@@ -65,17 +65,19 @@ func listData(vegetables []string) {
 		fmt.Printf("%d. %s\n", index+1, vegetable)
 	}
 	fmt.Println(`Untuk melihat, mengupdate, atau menghapus data.
-		Silahkan masukkan nomor yang tertera di sisi kiri nama barang.
-		Untuk kembali ke menu utama, masukkan angka 0.`)
+Silahkan masukkan nomor yang tertera di sisi kiri nama barang.
+Untuk kembali ke menu utama, masukkan angka 0.`)
 
-	var selectedMenu int
-	fmt.Scanln(&selectedMenu)
-	if index := selectedMenu - 1; selectedMenu == 0 {
-		main()
-	} else if selectedMenu <= len(vegetables) {
-		showData(index)
-	} else {
-		fmt.Printf("Invalid input. masukkan angka lebih kecil dari %d", len(vegetables))
+	var selectedMenu int = len(vegetables) + 1
+	for selectedMenu > len(vegetables) {
+		fmt.Scanln(&selectedMenu)
+		if index := selectedMenu - 1; selectedMenu == 0 {
+			break
+		} else if selectedMenu <= len(vegetables) {
+			showData(index)
+		} else {
+			fmt.Printf("Invalid input. masukkan angka lebih kecil dari %d", len(vegetables) + 1)
+		}
 	}
 }
 
