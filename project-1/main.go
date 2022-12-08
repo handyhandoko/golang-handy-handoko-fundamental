@@ -4,25 +4,26 @@ import (
 	"fmt"
 )
 
-func main(){
-	var vegetables = []string{"sawi", "bayam", "kangkung", "kol", "pare"}
+var vegetables = []string{"sawi", "bayam", "kangkung", "kol", "pare"}
+
+func main() {
 	var selectedMenu int
-	for selectedMenu < 3{
+	for selectedMenu < 3 {
 		selectedMenu = printMainMenu()
-		switch(selectedMenu){
-			case 1:
-				vegetables = addData(vegetables)
-			case 2:
-				listData(vegetables)
-			case 3:
-				continue
-			default:
-				fmt.Println("Invalid input. Silahkan masukkan angka 1, 2 atau 3.")
+		switch selectedMenu {
+		case 1:
+			vegetables = addData(vegetables)
+		case 2:
+			listData(vegetables)
+		case 3:
+			continue
+		default:
+			fmt.Println("Invalid input. Silahkan masukkan angka 1, 2 atau 3.")
 		}
 	}
 }
 
-func printMainMenu() int{
+func printMainMenu() int {
 	fmt.Println("Selamat datang di OndeMaret. Selamat belanja.")
 	fmt.Println("Masukkan (1) untuk menambah data.")
 	fmt.Println("Masukkan (2) untuk melihat semua data.")
@@ -33,13 +34,35 @@ func printMainMenu() int{
 	return selectedMenu
 }
 
-func showData(index int, vegetableName string){
-	fmt.Println(vegetableName)
+func removeByIndex(slice []string, index int) {
+	vegetables = append(vegetables[:index], vegetables[index+1:]...)
 }
 
-func listData(vegetables []string){
-	for index, vegetable := range(vegetables){
-		fmt.Printf("%d. %s\n", index+1 , vegetable)
+func updateData(slice []string, index int) {
+	fmt.Println("Masukkan nama baru.")
+	var newVegetableName string
+	fmt.Scanln(&newVegetableName)
+	vegetables[index] = newVegetableName
+}
+
+func showData(index int) {
+	fmt.Println(vegetables[index])
+	fmt.Println(`Untuk mengupdate data, tekan 1.
+		Untuk menghapus data, tekan 2.
+		Masukkan selain 1 atau 2 untuk kembali ke menu utama.`)
+
+	var selectedMenu int
+	fmt.Scanln(&selectedMenu)
+	if selectedMenu == 1 {
+		updateData(vegetables, index)
+	} else if selectedMenu == 2 {
+		removeByIndex(vegetables, index)
+	}
+}
+
+func listData(vegetables []string) {
+	for index, vegetable := range vegetables {
+		fmt.Printf("%d. %s\n", index+1, vegetable)
 	}
 	fmt.Println(`Untuk melihat, mengupdate, atau menghapus data.
 		Silahkan masukkan nomor yang tertera di sisi kiri nama barang.
@@ -47,16 +70,16 @@ func listData(vegetables []string){
 
 	var selectedMenu int
 	fmt.Scanln(&selectedMenu)
-	if index:= selectedMenu-1; (selectedMenu == 0){
+	if index := selectedMenu - 1; selectedMenu == 0 {
 		main()
-	} else if(selectedMenu <= len(vegetables)){
-		showData(index, vegetables[index])
-	// } else {
-	// 	fmt.Printf("Invalid input. masukkan angka lebih kecil dari %d", len(vegetables))
+	} else if selectedMenu <= len(vegetables) {
+		showData(index)
+	} else {
+		fmt.Printf("Invalid input. masukkan angka lebih kecil dari %d", len(vegetables))
 	}
 }
 
-func addData(vegetables []string) []string{
+func addData(vegetables []string) []string {
 	fmt.Println("Masukkan nama sayur:")
 	var vegetableName string
 	fmt.Scanln(&vegetableName)
