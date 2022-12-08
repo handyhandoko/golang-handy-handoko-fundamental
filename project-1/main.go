@@ -33,9 +33,26 @@ func printMainMenu() int{
 	return selectedMenu
 }
 
+func showData(index int, vegetableName string){
+	fmt.Println(vegetableName)
+}
+
 func listData(vegetables []string){
 	for index, vegetable := range(vegetables){
 		fmt.Printf("%d. %s\n", index+1 , vegetable)
+	}
+	fmt.Println(`Untuk melihat, mengupdate, atau menghapus data.
+		Silahkan masukkan nomor yang tertera di sisi kiri nama barang.
+		Untuk kembali ke menu utama, masukkan angka 0.`)
+
+	var selectedMenu int
+	fmt.Scanln(&selectedMenu)
+	if index:= selectedMenu-1; (selectedMenu == 0){
+		main()
+	} else if(selectedMenu <= len(vegetables)){
+		showData(index, vegetables[index])
+	// } else {
+	// 	fmt.Printf("Invalid input. masukkan angka lebih kecil dari %d", len(vegetables))
 	}
 }
 
