@@ -12,7 +12,7 @@ type VegetableHandler struct {
 func (handler *VegetableHandler) GetAllVegetables(){
 	vegetables, _ := handler.Service.GetAllVegetables()
 
-	for index, vegetable := range vegetables {
-		fmt.Printf("%d. %s\n", index+1, vegetable)
+	for _, vegetable := range vegetables {
+		fmt.Printf("%d. %s\n", vegetable.Id, vegetable.Name)
 	}
 }

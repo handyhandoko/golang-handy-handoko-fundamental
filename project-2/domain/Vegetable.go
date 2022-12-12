@@ -1,7 +1,7 @@
 package domain
 
 type Vegetable struct {
-	id uint
-	name string
-	price uint
+	Id uint
+	Name string
+	Price uint
 }

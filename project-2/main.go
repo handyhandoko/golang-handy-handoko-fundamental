@@ -7,7 +7,7 @@ import (
 	"project-2/handler"
 )
 
-var vegetables = []string{}
+var vegetables = []domain.Vegetable{}
 
 func main() {
 	var selectedMenu int
@@ -68,22 +68,23 @@ func listData(vegetables []string) {
 	vegetableService := service.NewVegetableService(vegetableRepository)
 	vegetableHandler := handler.VegetableHandler{vegetableService}
 	vegetableHandler.GetAllVegetables()
+	vegetables, _ = vegetableRepository.GetAll()
 
-// 	fmt.Println(`Untuk melihat, mengupdate, atau menghapus data.
-// Silahkan masukkan nomor yang tertera di sisi kiri nama barang.
-// Untuk kembali ke menu utama, masukkan angka 0.`)
+	fmt.Println(`Untuk melihat, mengupdate, atau menghapus data.
+Silahkan masukkan nomor yang tertera di sisi kiri nama barang.
+Untuk kembali ke menu utama, masukkan angka 0.`)
 
-// 	var selectedMenu int = len(vegetables) + 1
-// 	for selectedMenu > len(vegetables) {
-// 		fmt.Scanln(&selectedMenu)
-// 		if index := selectedMenu - 1; selectedMenu == 0 {
-// 			break
-// 		} else if selectedMenu <= len(vegetables) {
-// 			showData(index)
-// 		} else {
-// 			fmt.Printf("Invalid input. masukkan angka lebih kecil dari %d", len(vegetables) + 1)
-// 		}
-// 	}
+	var selectedMenu int = len(vegetables) + 1
+	for selectedMenu > len(vegetables) {
+		fmt.Scanln(&selectedMenu)
+		if index := selectedMenu - 1; selectedMenu == 0 {
+			break
+		} else if selectedMenu <= len(vegetables) {
+			showData(index)
+		} else {
+			fmt.Printf("Invalid input. masukkan angka lebih kecil dari %d", len(vegetables) + 1)
+		}
+	}
 }
 
 func addData(vegetables []string) []string {
