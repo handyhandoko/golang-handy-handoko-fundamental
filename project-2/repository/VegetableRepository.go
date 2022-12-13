@@ -6,8 +6,8 @@ import (
 )
 
 func AddItem(slice []model.Vegetable, vegetable model.Vegetable) []model.Vegetable {
-	var Id uint
-
+	var lastItem model.Vegetable = slice[len(slice)-1]
+	vegetable.Id = lastItem.Id + 1
 	return append(slice, vegetable)
 }
 
