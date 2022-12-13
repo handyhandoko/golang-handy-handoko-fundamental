@@ -2,12 +2,17 @@ package main
 
 import (
 	"fmt"
-	"project-2/service"
-	"project-2/domain"
-	"project-2/handler"
+	"project-2/repository"
+	"project-2/model"
 )
 
-var vegetables = []domain.Vegetable{}
+var vegetables = []model.Vegetable{
+	model.Vegetable {1, "sawi", 4500},
+	model.Vegetable {2, "bayam", 2000},
+	model.Vegetable {3, "kangkung", 1000},
+	model.Vegetable {4, "kol", 5000},
+	model.Vegetable {5, "pare", 3000},
+}
 
 func main() {
 	var selectedMenu int
@@ -15,7 +20,7 @@ func main() {
 		selectedMenu = printMainMenu()
 		switch selectedMenu {
 		case 1:
-			vegetables = addData(vegetables)
+			addData(vegetables)
 		case 2:
 			listData(vegetables)
 		case 3:
@@ -37,15 +42,20 @@ func printMainMenu() int {
 	return selectedMenu
 }
 
-func removeByIndex(slice []string, index int) {
-	vegetables = append(vegetables[:index], vegetables[index+1:]...)
-}
-
-func updateData(slice []string, index int) {
-	fmt.Println("Masukkan nama baru.")
+func inputData() model.Vegetable {
+	fmt.Println("Masukkan nama:")
 	var newVegetableName string
 	fmt.Scanln(&newVegetableName)
-	vegetables[index] = newVegetableName
+	fmt.Println("Masukkan harga: ")
+	var newVegetablePrice uint
+	fmt.Scanln(&newVegetablePrice)
+	return model.Vegetable { 0, newVegetableName, newVegetablePrice}
+}
+
+func updateData(slice []model.Vegetable, index int) {
+	var vegetableUpdate model.Vegetable
+	vegetableUpdate = inputData()
+	vegetables, _ = repository.UpdateByIndex(vegetables, vegetableUpdate, index)
 }
 
 func showData(index int) {
@@ -59,17 +69,14 @@ Masukkan selain 1 atau 2 untuk kembali ke menu utama.`)
 	if selectedMenu == 1 {
 		updateData(vegetables, index)
 	} else if selectedMenu == 2 {
-		removeByIndex(vegetables, index)
+		repository.RemoveByIndex(vegetables, index)
 	}
 }
 
-func listData(vegetables []string) {
-	vegetableRepository := domain.NewVegetableRepositoryStub()
-	vegetableService := service.NewVegetableService(vegetableRepository)
-	vegetableHandler := handler.VegetableHandler{vegetableService}
-	vegetableHandler.GetAllVegetables()
-	vegetables, _ = vegetableRepository.GetAll()
-
+func listData(vegetables []model.Vegetable) {
+	for index, vegetable := range vegetables {
+		fmt.Printf("%d. %s\n", index+1, vegetable)
+	}
 	fmt.Println(`Untuk melihat, mengupdate, atau menghapus data.
 Silahkan masukkan nomor yang tertera di sisi kiri nama barang.
 Untuk kembali ke menu utama, masukkan angka 0.`)
@@ -87,9 +94,8 @@ Untuk kembali ke menu utama, masukkan angka 0.`)
 	}
 }
 
-func addData(vegetables []string) []string {
-	fmt.Println("Masukkan nama sayur:")
-	var vegetableName string
-	fmt.Scanln(&vegetableName)
-	return append(vegetables, vegetableName)
+func addData(vegetables []model.Vegetable) {
+	var vegetableNew model.Vegetable
+	vegetableNew = inputData()
+	vegetables = repository.AddItem(vegetables, vegetableNew)
 }
