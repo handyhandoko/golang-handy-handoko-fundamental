@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"encoding/json"
 	"strconv"
+	"log"
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 
 	"project-2/repository"
 	"project-2/model"
-	"project-2/sort"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -16,19 +18,24 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-var vegetables = []model.Vegetable{
-	model.Vegetable {1, "sawi", 4500},
-	model.Vegetable {3, "bayam", 2000},
-	model.Vegetable {2, "kangkung", 1000},
-	model.Vegetable {4, "kol", 5000},
-	model.Vegetable {5, "pare", 3000},
-}
+const (
+	username = "root"
+	password = ""
+	hostname = "127.0.0.1:3306"
+	dbname = "belajargolang"
+)
 
 var validate *validator.Validate
+var db *sql.DB
 
 type Server struct {
 	Router *chi.Mux
 	// Db, config can be added here
+}
+
+// return Data Source Name string
+func dsn () string {
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbname)
 }
 
 func pong(w http.ResponseWriter, r *http.Request) {
@@ -36,12 +43,30 @@ func pong(w http.ResponseWriter, r *http.Request) {
 }
 
 func list(w http.ResponseWriter, r *http.Request) {
+	rows, err := db.Query("select * from vegetables")
+	if (err != nil) {
+		fmt.Printf("Error select: %s", err.Error())
+	}
+	defer rows.Close()
+
+	var vegetables []model.Vegetable
+	for rows.Next(){
+		var vegetable model.Vegetable
+		err = rows.Scan(&vegetable.Id, &vegetable.Name, &vegetable.Price)
+
+		if (err != nil) {
+			fmt.Printf("Error scan: %s", err.Error())
+		}
+		vegetables = append(vegetables, vegetable)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(vegetables)
 }
 
 func get(w http.ResponseWriter, r *http.Request) {
+	var vegetables []model.Vegetable 
   idParam := chi.URLParam(r, "id")
 	id, err := strconv.ParseUint(idParam, 10, 32)
 	index, err := repository.FindIndexById(vegetables, uint(id))
@@ -58,7 +83,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 }
 
 func create(w http.ResponseWriter, r *http.Request) {
-
+	var vegetables []model.Vegetable 
 	var newVegetable model.Vegetable
 	var err error = json.NewDecoder(r.Body).Decode(&newVegetable)
 	if err != nil {
@@ -72,6 +97,7 @@ func create(w http.ResponseWriter, r *http.Request) {
 }
 
 func update(w http.ResponseWriter, r *http.Request) {
+	var vegetables []model.Vegetable 
   idParam := chi.URLParam(r, "id")
 	id, _ := strconv.ParseUint(idParam, 10, 32)
 
@@ -88,6 +114,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 }
 
 func delete(w http.ResponseWriter, r *http.Request) {
+	var vegetables []model.Vegetable 
   idParam := chi.URLParam(r, "id")
 	id, _ := strconv.ParseUint(idParam, 10, 32)
 
@@ -121,7 +148,18 @@ func CreateNewServer() *Server {
 
 func main() {
 	validate = validator.New()
-	vegetables = sort.Selection(vegetables)
+
+	var err error
+	db, err = sql.Open("mysql", dsn())
+	if err != nil {
+		log.Printf("Error %s when opening db.", err.Error())
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if(err != nil){
+		fmt.Printf("error connecting to database: %s \n",err.Error())
+	}
 
 	s := CreateNewServer()
 	s.MountHandlers()
