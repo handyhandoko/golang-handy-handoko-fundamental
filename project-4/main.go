@@ -43,7 +43,7 @@ func pong(w http.ResponseWriter, r *http.Request) {
 }
 
 func list(w http.ResponseWriter, r *http.Request) {
-	rows, err := db.Query("select * from vegetables")
+	rows, err := db.Query("select id, name, price from vegetables")
 	if (err != nil) {
 		fmt.Printf("Error select: %s", err.Error())
 	}
@@ -66,17 +66,15 @@ func list(w http.ResponseWriter, r *http.Request) {
 }
 
 func get(w http.ResponseWriter, r *http.Request) {
-	var vegetables []model.Vegetable 
-  idParam := chi.URLParam(r, "id")
-	id, err := strconv.ParseUint(idParam, 10, 32)
-	index, err := repository.FindIndexById(vegetables, uint(id))
-	var vegetable model.Vegetable = vegetables[index]
-
-  if err != nil {
-    w.WriteHeader(500)
-    w.Write([]byte(fmt.Sprintf("error fetching data %d: %v", idParam, err)))
-    return
-  }
+  id := chi.URLParam(r, "id")
+	var vegetable model.Vegetable
+	
+	err := db.
+				QueryRow("SELECT id, name, price FROM vegetables WHERE id = ?", id).
+				Scan(&vegetable.Id, &vegetable.Name, &vegetable.Price)
+	if (err != nil) {
+		fmt.Printf("Error query row: %s", err.Error())
+	} 
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(vegetable)
