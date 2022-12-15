@@ -81,7 +81,6 @@ func get(w http.ResponseWriter, r *http.Request) {
 }
 
 func create(w http.ResponseWriter, r *http.Request) {
-	var vegetables []model.Vegetable 
 	var newVegetable model.Vegetable
 	var err error = json.NewDecoder(r.Body).Decode(&newVegetable)
 	if err != nil {
@@ -91,7 +90,10 @@ func create(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), 422)
 	}
-	vegetables = repository.AddItem(vegetables, newVegetable)
+	_, err = db.Exec("INSERT INTO vegetables (name, price) VALUES (?, ?)", newVegetable.Name, newVegetable.Price)
+	if (err != nil) {
+		fmt.Printf("Error Insert Row: %s", err.Error())
+	}
 }
 
 func update(w http.ResponseWriter, r *http.Request) {
