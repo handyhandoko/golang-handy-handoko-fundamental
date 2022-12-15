@@ -4,12 +4,10 @@ import (
 	"net/http"
 	"fmt"
 	"encoding/json"
-	"strconv"
 	"log"
 	"database/sql"
 	_ "github.com/go-sql-driver/mysql"
 
-	"project-2/repository"
 	"project-2/model"
 
 	"github.com/go-chi/chi/v5"
@@ -116,17 +114,11 @@ func update(w http.ResponseWriter, r *http.Request) {
 }
 
 func delete(w http.ResponseWriter, r *http.Request) {
-	var vegetables []model.Vegetable 
-  idParam := chi.URLParam(r, "id")
-	id, _ := strconv.ParseUint(idParam, 10, 32)
-
-	index, err := repository.FindIndexById(vegetables, uint(id))
-	if err != nil {
-		http.Error(w, err.Error(), 404)
+  id := chi.URLParam(r, "id")
+	_, err := db.Exec("DELETE FROM vegetables WHERE id = ?", id)
+	if (err != nil){
+		fmt.Printf("Error Delete Data: %s", err.Error())
 	}
-	var vegetable model.Vegetable = vegetables[index]
-
-	vegetables, _ = repository.RemoveById(vegetables, vegetable)
 }
 
 func (s *Server) MountHandlers() {
