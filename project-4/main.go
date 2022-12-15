@@ -97,10 +97,6 @@ func create(w http.ResponseWriter, r *http.Request) {
 }
 
 func update(w http.ResponseWriter, r *http.Request) {
-	var vegetables []model.Vegetable 
-  idParam := chi.URLParam(r, "id")
-	id, _ := strconv.ParseUint(idParam, 10, 32)
-
 	var updateVegetable model.Vegetable
 	err := json.NewDecoder(r.Body).Decode(&updateVegetable)
 	if err != nil {
@@ -110,7 +106,13 @@ func update(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), 422)
 	}
-	vegetables, _ = repository.UpdateById(vegetables, updateVegetable, uint(id))
+
+  id := chi.URLParam(r, "id")
+
+	_, err = db.Exec("UPDATE vegetables SET name = ?, price = ? WHERE id = ?", updateVegetable.Name, updateVegetable.Price, id)
+	if (err != nil) {
+		fmt.Printf("Error Update Data: %s", err.Error())
+	}
 }
 
 func delete(w http.ResponseWriter, r *http.Request) {
