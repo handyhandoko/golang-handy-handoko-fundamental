@@ -16,8 +16,10 @@ func Selection(slice []model.Vegetable) []model.Vegetable{
 			}
 		}
 
-		// swap item with minimum index with i
-		slice[i], slice[minIndex] = slice[minIndex], slice[i]
+		// jika min_index != i, swap item with minimum index with i
+		if (minIndex != i){
+			slice[i], slice[minIndex] = slice[minIndex], slice[i]
+		}
 	}
 	return slice
 }
