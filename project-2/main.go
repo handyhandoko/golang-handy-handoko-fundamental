@@ -9,9 +9,9 @@ import (
 
 var vegetables = []model.Vegetable{
 	model.Vegetable {1, "sawi", 4500},
-	model.Vegetable {3, "bayam", 2000},
-	model.Vegetable {2, "kangkung", 1000},
 	model.Vegetable {4, "kol", 5000},
+	model.Vegetable {2, "kangkung", 1000},
+	model.Vegetable {3, "bayam", 2000},
 	model.Vegetable {5, "pare", 3000},
 }
 
@@ -60,7 +60,8 @@ func updateData(slice *[]model.Vegetable, index int) {
 	*slice, _ = repository.UpdateByIndex(*slice, vegetableUpdate, index)
 }
 
-func showData(index int) {
+func showData(id int) {
+	index , _ := repository.FindIndexById(vegetables,	uint(id))
 	fmt.Println(vegetables[index])
 	fmt.Println(`Untuk mengupdate data, tekan 1.
 Untuk menghapus data, tekan 2.
@@ -76,23 +77,18 @@ Masukkan selain 1 atau 2 untuk kembali ke menu utama.`)
 }
 
 func listData(vegetables []model.Vegetable) {
-	for index, vegetable := range vegetables {
-		fmt.Printf("%d. %s\n", index+1, vegetable)
+	for _, vegetable := range vegetables {
+		fmt.Printf("%d. %s\n", vegetable.Id, vegetable.Name)
 	}
 	fmt.Println(`Untuk melihat, mengupdate, atau menghapus data.
-Silahkan masukkan nomor yang tertera di sisi kiri nama barang.
-Untuk kembali ke menu utama, masukkan angka 0.`)
+Silahkan masukkan nomor yang tertera di sisi kiri nama barang.`)
 
-	var selectedMenu int = len(vegetables) + 1
-	for selectedMenu > len(vegetables) {
-		fmt.Scanln(&selectedMenu)
-		if index := selectedMenu - 1; selectedMenu == 0 {
-			break
-		} else if selectedMenu <= len(vegetables) {
-			showData(index)
-		} else {
-			fmt.Printf("Invalid input. masukkan angka lebih kecil dari %d", len(vegetables) + 1)
-		}
+	var selectedId int = len(vegetables) + 1
+	fmt.Scanln(&selectedId)
+	if selectedId <= len(vegetables) {
+		showData(selectedId)
+	} else {
+		fmt.Printf("Invalid input. masukkan angka lebih kecil dari %d", len(vegetables) + 1)
 	}
 }
 
